@@ -3,8 +3,26 @@ title: "Main"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Use of Machine Learning Algorithms to Predict Behavior
+
+First off, we need to obtain our data. That we will do in the following code snippet:
+
+```{r setup}
+
+require(caret)
+
+
+if(!exists("pmltesting")){
+  
+  pmltesting <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-testing.csv")
+
+}
+
+if(!exists("pmltraining")){
+  
+  pmltraining <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-training.csv")
+
+}
 ```
 
 
