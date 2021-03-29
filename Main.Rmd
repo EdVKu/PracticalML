@@ -108,37 +108,19 @@ mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
 mod0$finalmodel
 ```
 
-## Prediction
+## Prediction and Results
 
 ```{r pred}
 
-pred1 <- predict(mod0, testing)
-pred2 <- predict(mod1, testing)
+pred1 <- predict(mod0, testing[,-length(names(testing))])
+
+print(pred1)
 
 
 ```
 
-## Combined Fit
-
-```{r checkfit}
-#mod1 <- modelRf
-
-#predf <- data.frame(pred1 = pred1,pred2 = pred2, classe= training$classe)
-#modcomb <- train(classe~., data =predf, method = "gam")
-#predcomb <- predict(modcomb, predf)
-
-
-#pred1v <- predict(mod0, val)
-#pred2v <- predict(mod1, val)
-
-#predf <- data.frame(pred1v = pred1v, pred2v = pred2v)
-#combpredv <- predict(predcomb, predf)
-#mod1$results
-
-```
+## Conclusions
 
 ## References
 
 Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
-
-
