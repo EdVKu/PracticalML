@@ -80,7 +80,7 @@ test <- testraw[, sapply(testraw, is.numeric)]
 ```{r training}
 # instruct train to use 3-fold CV to select optimal tuning parameters
 fitctrl <- trainControl(method="cv", number=3, verboseIter=F)
-mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
+mod0 <- train(classe ~ ., data=train, method="rf", trControl = fitctrl)
 
 mod0
 ```
