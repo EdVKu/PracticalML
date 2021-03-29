@@ -4,6 +4,10 @@ author: "Eduardo V. Kuri"
 output: html_document
 ---
 
+## Introduction
+
+>We will predict, given some data retrieved from the training set, the type of exercise done, ranging from A (exactly according to specification), B (Throwing the elbows to the front), C (Lifting the dumbell only halfway), D (Lowering the dumbell only halfway), and E (Throwing the hips to the front).
+
 ## Retrieval of Data
 
 > First off, we need to obtain our data and install the caret library. We will do that in the following code snippet:
