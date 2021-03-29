@@ -1,40 +1,144 @@
 ---
-title: "Main"
+title: "Practical Machine Learning Course Project"
+author: "Eduardo V. Kuri"
 output: html_document
 ---
 
-# Use of Machine Learning Algorithms to Predict Behavior
+## Retrieval of Data
 
-First off, we need to obtain our data. That we will do in the following code snippet:
+> First off, we need to obtain our data and install the caret library. We will do that in the following code snippet:
 
 ```{r setup}
 
 require(caret)
+require(ggplot2)
+require(randomForest)
 
 
-if(!exists("pmltesting")){
+if(!exists("trainraw")){
   
-  pmltesting <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-testing.csv")
+  trainraw <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-training.csv")
 
 }
 
-if(!exists("pmltraining")){
+if(!exists("testraw")){
   
-  pmltraining <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-training.csv")
+  testraw <- read.csv("~/UNAM 2020-24/DATSCI/MachineLearning/pml-testing.csv")
 
 }
 ```
 
+```{r expana}
+
+print(c(dim(testraw)[1], dim(trainraw)[1]))
+
+per <- 100*dim(trainraw)[1]/(dim(testraw)[1]+dim(trainraw)[1])
+
+print(paste("Percentage of training data:", round(per,4),"%", ", Percentage of testing data:", round(100-per,4),"%", ", Number of variables: ",dim(trainraw)[2]))
+
+completecases <- complete.cases(trainraw)
+print(length(completecases[completecases==TRUE]))
 
 
-```{r cars}
+#Validation set
+
+
+# Juntar modelos
+```
+
+> There seems to be a lot of information, and no guarantee that information will be of any use. We then clean the columns with NAs, in order to reduce the computational burden:
+
+```{r cleanup}
+trainraw <- trainraw[, colSums(is.na(trainraw)) == 0]
+testraw <- testraw[, colSums(is.na(testraw))==0]
+classe <- trainraw$classe
+trainRemove <- grepl("^X|timestamp|window", names(trainraw))
+trainraw <- trainraw[, !trainRemove]
+train <- trainraw[, sapply(trainraw, is.numeric)]
+train$classe <- classe
+testRemove <- grepl("^X|timestamp|window", names(testraw))
+testraw <- testraw[, !testRemove]
+test <- testraw[, sapply(testraw, is.numeric)]
+
+
+
+
+belt <- grep("[Bb]elt", names(train))
+farm <- grep("[Ff]orearm", names(train))
+arm <- grep("[Aa]rm", names(train))
+dbell <- grep("[Dd]umbbell", names(train))
+classe0 <- grep("classe", names(train))
+
+
+belttrain <- train[,c(belt, classe0)] 
+farmtrain <- train[,c(farm, classe0)]
+armtrain <- train[,c(arm,classe0)]
+dbelltrain <- train[,c(dbell, classe0)]
+
+#Validation set
+
+
+# Juntar modelos
+```
+
+## Slice into Train and Validation sets
+
+```{r slice}
+
+set.seed(123455)
+
+intrain <- createDataPartition(train$classe, p = 0.75, list=F)
+
+training <- train[intrain, ]
+val <- train[-intrain, ]
+
+
+
+
+  # Juntar modelos
+```
+
+## Training
+
+```{r training}
+# instruct train to use 3-fold CV to select optimal tuning parameters
+fitctrl <- trainControl(method="cv", number=3, verboseIter=F)
+mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
+
+mod0$finalmodel
+```
+
+## Prediction
+
+```{r pred}
+
+pred1 <- predict(mod0, testing)
+pred2 <- predict(mod1, testing)
+
 
 ```
 
+## Combined Fit
+
+```{r checkfit}
+#mod1 <- modelRf
+
+#predf <- data.frame(pred1 = pred1,pred2 = pred2, classe= training$classe)
+#modcomb <- train(classe~., data =predf, method = "gam")
+#predcomb <- predict(modcomb, predf)
 
 
-```{r pressure, echo=FALSE}
+#pred1v <- predict(mod0, val)
+#pred2v <- predict(mod1, val)
+
+#predf <- data.frame(pred1v = pred1v, pred2v = pred2v)
+#combpredv <- predict(predcomb, predf)
+#mod1$results
 
 ```
+
+## References
+
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
 
 
