@@ -87,7 +87,7 @@ mod0
 
 ## Prediction and Results
 
->Because of the already tough computational complexity, the 
+>Because of the already tough computational complexity, we will limit ourselves with the results from the training set. Now, we will predict the 20 cases from the test set.
 
 ```{r pred}
 
@@ -100,6 +100,7 @@ print(pred1)
 
 ## Conclusions
 
+>There seems to be a good model fit, that might predict well on small data sets. Nothing can be said about bigger sets, unfortunately.
 
 
 ## References
