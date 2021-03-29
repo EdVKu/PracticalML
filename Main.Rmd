@@ -7,7 +7,7 @@ output: html_document
 
 ## Introduction
 
->We will predict, given some data retrieved from the training set, the type of exercise done, ranging from A (exactly according to specification), B (Throwing the elbows to the front), C (Lifting the dumbell only halfway), D (Lowering the dumbell only halfway), and E (Throwing the hips to the front).
+> We will predict, given some data retrieved from the training set, the type of exercise done, ranging from A (exactly according to specification), B (Throwing the elbows to the front), C (Lifting the dumbell only halfway), D (Lowering the dumbell only halfway), and E (Throwing the hips to the front).
 
 ## Retrieval of Data
 
@@ -31,8 +31,7 @@ if(!exists("testraw")){
 }
 ```
 
-
->Now we proceed to do some exploratory analysis in order to obtain the approximate dimensions of the sets as well as the percentage of it devoted to training and testing.
+> Now we proceed to do some exploratory analysis in order to obtain the approximate dimensions of the sets as well as the percentage of it devoted to training and testing.
 
 ```{r expana}
 
@@ -60,7 +59,7 @@ testraw <- testraw[, colSums(is.na(testraw))==0]
 
 ```
 
->Now, we will eliminate all columns that can't be used (either because it is not numeric, or because of other reasons).
+> Now, we will eliminate all columns that can't be used (either because it is not numeric, or because of other reasons).
 
 ```{r cleanup}
 
@@ -85,7 +84,7 @@ training <- train[intrain,]
 
 ## Training
 
->We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column (we will keep a cache file in order to speed up the process of knitting).
+> We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column (we will keep a cache file in order to speed up the process of knitting).
 
 ```{r training, cache=TRUE}
 # instruct train to use 3-fold CV to select optimal tuning parameters
@@ -95,10 +94,9 @@ mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
 mod0
 ```
 
-
 ## Prediction and Results
 
->Because of the already tough computational complexity, we will limit ourselves with the results from the training set. Now, we will predict the 20 cases from the test set.
+> Because of the already tough computational complexity, we will limit ourselves with the results from the training set. Now, we will predict the 20 cases from the test set.
 
 ```{r pred}
 
@@ -112,7 +110,7 @@ print(pred1)
 
 ## Measurement of accuracy
 
->We shall now use the validation dataset to obtain the performance of our recently built model:
+> We shall now use the validation dataset to obtain the performance of our recently built model:
 
 ```{r performance}
 
@@ -120,11 +118,12 @@ pred2 <- predict(mod0, validation)
 acc <- postResample(pred2, validation$classe)
 
 ```
->It is then given that the accuracy for this validation set is `r acc[1]*100`% and its Kappa is `r acc[2]*100`, which is surprising.
+
+> It is then given that the accuracy for this validation set is `r acc[1]*100`% and its Kappa is `r acc[2]*100`%, which is surprising.
 
 ## Conclusions
 
->There seems to be a good model fit, that might predict well on small and medium data sets. 
+> There seems to be a good model fit, that might predict well on small and medium data sets.
 
 ## References
 
