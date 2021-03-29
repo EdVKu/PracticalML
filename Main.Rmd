@@ -1,6 +1,7 @@
 ---
 title: "Practical Machine Learning Course Project"
 author: "Eduardo V. Kuri"
+date: "28/03/2021"
 output: html_document
 ---
 
