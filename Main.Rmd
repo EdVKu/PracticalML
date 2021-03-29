@@ -28,6 +28,9 @@ if(!exists("testraw")){
 }
 ```
 
+
+>Now we proceed to do some exploratory analysis in order to obtain the approximate dimensions of the sets as well as the percentage of it devoted to training and testing.
+
 ```{r expana}
 
 print(c(dim(testraw)[1], dim(trainraw)[1]))
@@ -48,9 +51,16 @@ print(length(completecases[completecases==TRUE]))
 
 > There seems to be a lot of information, and no guarantee that information will be of any use. We then clean the columns with NAs, in order to reduce the computational burden:
 
-```{r cleanup}
+```{r cleanup0}
 trainraw <- trainraw[, colSums(is.na(trainraw)) == 0]
 testraw <- testraw[, colSums(is.na(testraw))==0]
+
+```
+
+>Now, we will eliminate all columns that can't be used (either because it is not numeric, or because of other reasons).
+
+```{r cleanup}
+
 classe <- trainraw$classe
 trainRemove <- grepl("^X|timestamp|window", names(trainraw))
 trainraw <- trainraw[, !trainRemove]
@@ -61,58 +71,27 @@ testraw <- testraw[, !testRemove]
 test <- testraw[, sapply(testraw, is.numeric)]
 
 
-
-
-belt <- grep("[Bb]elt", names(train))
-farm <- grep("[Ff]orearm", names(train))
-arm <- grep("[Aa]rm", names(train))
-dbell <- grep("[Dd]umbbell", names(train))
-classe0 <- grep("classe", names(train))
-
-
-belttrain <- train[,c(belt, classe0)] 
-farmtrain <- train[,c(farm, classe0)]
-armtrain <- train[,c(arm,classe0)]
-dbelltrain <- train[,c(dbell, classe0)]
-
-#Validation set
-
-
-# Juntar modelos
-```
-
-## Slice into Train and Validation sets
-
-```{r slice}
-
-set.seed(123455)
-
-intrain <- createDataPartition(train$classe, p = 0.75, list=F)
-
-training <- train[intrain, ]
-val <- train[-intrain, ]
-
-
-
-
-  # Juntar modelos
 ```
 
 ## Training
+
+>We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column.
 
 ```{r training}
 # instruct train to use 3-fold CV to select optimal tuning parameters
 fitctrl <- trainControl(method="cv", number=3, verboseIter=F)
 mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
 
-mod0$finalmodel
+mod0
 ```
 
 ## Prediction and Results
 
+>Because of the already tough computational complexity, the 
+
 ```{r pred}
 
-pred1 <- predict(mod0, testing[,-length(names(testing))])
+pred1 <- predict(mod0, test[,-length(names(test))])
 
 print(pred1)
 
@@ -120,6 +99,8 @@ print(pred1)
 ```
 
 ## Conclusions
+
+
 
 ## References
 
