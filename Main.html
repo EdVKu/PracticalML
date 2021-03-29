@@ -170,6 +170,12 @@ pre code {
 </div>
 
 
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<blockquote>
+<p>We will predict, given some data retrieved from the training set, the type of exercise done, ranging from A (exactly according to specification), B (Throwing the elbows to the front), C (Lifting the dumbell only halfway), D (Lowering the dumbell only halfway), and E (Throwing the hips to the front).</p>
+</blockquote>
+</div>
 <div id="retrieval-of-data" class="section level2">
 <h2>Retrieval of Data</h2>
 <blockquote>
@@ -181,17 +187,6 @@ pre code {
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3</code></pre>
-<pre class="r"><code>require(ggplot2)
-require(randomForest)</code></pre>
-<pre><code>## Loading required package: randomForest</code></pre>
-<pre><code>## Warning: package &#39;randomForest&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## randomForest 4.6-14</code></pre>
-<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<pre><code>## 
-## Attaching package: &#39;randomForest&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     margin</code></pre>
 <pre class="r"><code>if(!exists(&quot;trainraw&quot;)){
   
   trainraw &lt;- read.csv(&quot;~/UNAM 2020-24/DATSCI/MachineLearning/pml-training.csv&quot;)
@@ -234,36 +229,43 @@ train &lt;- trainraw[, sapply(trainraw, is.numeric)]
 train$classe &lt;- classe
 testRemove &lt;- grepl(&quot;^X|timestamp|window&quot;, names(testraw))
 testraw &lt;- testraw[, !testRemove]
-test &lt;- testraw[, sapply(testraw, is.numeric)]</code></pre>
+test &lt;- testraw[, sapply(testraw, is.numeric)]
+
+set.seed(123345)
+
+intrain &lt;- createDataPartition(train$classe, p = 0.7, list=F)
+
+validation &lt;- train[-intrain,]
+training &lt;- train[intrain,]</code></pre>
 </div>
 <div id="training" class="section level2">
 <h2>Training</h2>
 <blockquote>
-<p>We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column.</p>
+<p>We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column (we will keep a cache file in order to speed up the process of knitting).</p>
 </blockquote>
 <pre class="r"><code># instruct train to use 3-fold CV to select optimal tuning parameters
 fitctrl &lt;- trainControl(method=&quot;cv&quot;, number=3, verboseIter=F)
-mod0 &lt;- train(classe ~ ., data=train, method=&quot;rf&quot;, trControl = fitctrl)
+mod0 &lt;- train(classe ~ ., data=training, method=&quot;rf&quot;, trControl = fitctrl)
 
 mod0</code></pre>
 <pre><code>## Random Forest 
 ## 
-## 19622 samples
+## 13737 samples
 ##    52 predictor
 ##     5 classes: &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39; 
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (3 fold) 
-## Summary of sample sizes: 13080, 13082, 13082 
+## Summary of sample sizes: 9160, 9157, 9157 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa    
-##    2    0.9930692  0.9912323
-##   27    0.9929162  0.9910387
-##   52    0.9881256  0.9849781
+##    2    0.9872606  0.9838818
+##   27    0.9889350  0.9860017
+##   52    0.9829653  0.9784460
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was mtry = 2.</code></pre>
+## The final value used for the model was mtry = 27.</code></pre>
 </div>
 <div id="prediction-and-results" class="section level2">
 <h2>Prediction and Results</h2>
@@ -276,10 +278,21 @@ print(pred1)</code></pre>
 <pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
 ## Levels: A B C D E</code></pre>
 </div>
+<div id="measurement-of-accuracy" class="section level2">
+<h2>Measurement of accuracy</h2>
+<blockquote>
+<p>We shall now use the validation dataset to obtain the performance of our recently built model:</p>
+</blockquote>
+<pre class="r"><code>pred2 &lt;- predict(mod0, validation)
+acc &lt;- postResample(pred2, validation$classe)</code></pre>
+<blockquote>
+<p>It is then given that the accuracy for this validation set is 99.3712829% and its Kappa is 99.2046998, which is surprising.</p>
+</blockquote>
+</div>
 <div id="conclusions" class="section level2">
 <h2>Conclusions</h2>
 <blockquote>
-<p>There seems to be a good model fit, that might predict well on small data sets. Nothing can be said about bigger sets, unfortunately.</p>
+<p>There seems to be a good model fit, that might predict well on small and medium data sets.</p>
 </blockquote>
 </div>
 <div id="references" class="section level2">

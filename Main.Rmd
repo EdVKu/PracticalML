@@ -15,8 +15,6 @@ output: html_document
 ```{r setup}
 
 require(caret)
-require(ggplot2)
-require(randomForest)
 
 
 if(!exists("trainraw")){
@@ -74,20 +72,28 @@ testRemove <- grepl("^X|timestamp|window", names(testraw))
 testraw <- testraw[, !testRemove]
 test <- testraw[, sapply(testraw, is.numeric)]
 
+set.seed(123345)
+
+intrain <- createDataPartition(train$classe, p = 0.7, list=F)
+
+validation <- train[-intrain,]
+training <- train[intrain,]
+
 
 ```
 
 ## Training
 
->We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column.
+>We will proceed to train the model using random forest and a 3-fold CV. This is done because of the discrete and categorical nature of the classe column (we will keep a cache file in order to speed up the process of knitting).
 
-```{r training}
+```{r training, cache=TRUE}
 # instruct train to use 3-fold CV to select optimal tuning parameters
 fitctrl <- trainControl(method="cv", number=3, verboseIter=F)
-mod0 <- train(classe ~ ., data=train, method="rf", trControl = fitctrl)
+mod0 <- train(classe ~ ., data=training, method="rf", trControl = fitctrl)
 
 mod0
 ```
+
 
 ## Prediction and Results
 
@@ -103,10 +109,21 @@ print(pred1)
 
 ```
 
+## Measurement of accuracy
+
+>We shall now use the validation dataset to obtain the performance of our recently built model:
+
+```{r performance}
+
+pred2 <- predict(mod0, validation)
+acc <- postResample(pred2, validation$classe)
+
+```
+>It is then given that the accuracy for this validation set is `r acc[1]*100`% and its Kappa is `r acc[2]*100`, which is surprising.
+
 ## Conclusions
 
->There seems to be a good model fit, that might predict well on small data sets. Nothing can be said about bigger sets, unfortunately.
-
+>There seems to be a good model fit, that might predict well on small and medium data sets. 
 
 ## References
 
